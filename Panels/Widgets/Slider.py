@@ -4,47 +4,53 @@ gi.require_version('Gtk', '4.0')
 from gi.repository import Gtk
 
 
-class Slider(Gtk.Box):
-    def __init__(self, file_name: str, min=0, max=100, step=1, marks={}, name="", shortname=""):
-        super().__init__(orientation=Gtk.Orientation.VERTICAL)
+class Slider(Gtk.Grid):
+    def __init__(self, file_name: str, min=0, max=100, step=1, marks={}, name="", description=""):
+        super().__init__()
 
         self.file_name=file_name
         self.min=min
         self.max=max
         self.step=step
 
-        if len(name)>0:
-            self.name=Gtk.Label(label=str(name))
-            self.name.set_halign(Gtk.Align.START)
-            self.append(self.name)
+        # Slider name
 
+        hbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
+        if len(description)>0:
+            description_label=Gtk.Label(label=description)
+            hbox.append(description_label)
+            name_label=Gtk.Label(label=f"({name})")
+            hbox.append(name_label)
+        else:
+            name_label=Gtk.Label(label=name)
+            hbox.append(name_label)            
+        # self.name.set_halign(Gtk.Align.START)
+
+        # Slider
         if len(marks)==0:
             marks = {
                 min: "MIN",
                 max: f"{max}",
             }
-
-
-        hbox=Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
-
-        self.shortname = Gtk.Label(label=shortname)
-        hbox.append(self.shortname)
-
         value=self.get_value()
         adjustment = Gtk.Adjustment(value=value, lower=min, upper=max, step_increment=step)
-
         self.slider = Gtk.Scale(orientation=Gtk.Orientation.HORIZONTAL, adjustment=adjustment)
         self.slider.connect("value-changed", self.on_slider_changed)
-        self.slider.set_hexpand(True)
 
         for v, l in marks.items():
-            self.slider.add_mark(v, Gtk.PositionType.BOTTOM, l)
+            self.slider.add_mark(v, Gtk.PositionType.TOP, l)
 
-        hbox.append(self.slider)
+        # Slider value
+        self.value_label = Gtk.Label(label=str(value))
 
-        self.label = Gtk.Label(label=str(value))
-        hbox.append(self.label)
-        self.append(hbox)
+        # Presentation
+        hbox.set_size_request(150, -1)
+        self.slider.set_hexpand(True)
+        self.value_label.set_size_request(50, -1)
+        
+        self.attach(hbox, 0, 1, 1, 1) 
+        self.attach(self.slider, 1, 1, 1, 1)
+        self.attach(self.value_label, 2, 1, 1, 1) 
 
 
     def get_value(self):
@@ -59,6 +65,6 @@ class Slider(Gtk.Box):
         value=int(slider.get_value())
         snapped_value=(value//self.step)*self.step 
         self.slider.set_value(snapped_value)
-        self.label.set_text(str(snapped_value))
+        self.value_label.set_text(str(snapped_value))
         with open(self.file_name, 'w') as f:
             f.write(str(snapped_value))

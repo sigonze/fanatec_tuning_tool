@@ -4,8 +4,7 @@ gi.require_version('Gtk', '4.0')
 from gi.repository import Gtk
 
 
-# Mapping of values to display text
-SLOT_TEXT = [
+SLOT_VALUES = [
     "A SET",
     "SET 1",
     "SET 2",
@@ -15,24 +14,27 @@ SLOT_TEXT = [
 ]
 
 
-
 class SlotSelector(Gtk.Box):
     def __init__(self, file_name: str):
-        super().__init__(orientation=Gtk.Orientation.VERTICAL, spacing=6)
-
-        self.set_margin_top(20)
-        self.set_margin_bottom(20)
-        self.set_margin_start(20)
-        self.set_margin_end(20)
+        super().__init__(orientation=Gtk.Orientation.HORIZONTAL, spacing=5)
 
         self.file_name = file_name
 
-        self.slot_selection = Gtk.DropDown.new_from_strings(SLOT_TEXT)
+        self.slot_selection = Gtk.DropDown.new_from_strings(SLOT_VALUES)
         self.slot_selection.set_selected(self.get_value())
         self.slot_selection.connect("notify::selected-item", self.on_slot_changed)
 
+        left_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=0)
+        right_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=0)
+
+        self.append(left_box)
         self.append(self.slot_selection)
-    
+        self.append(right_box)
+        left_box.set_hexpand(True)
+        self.slot_selection.set_hexpand(True)
+        right_box.set_hexpand(True)
+
+
     def get_value(self) -> int:
         value = 0
         if os.path.exists(self.file_name):
@@ -44,6 +46,6 @@ class SlotSelector(Gtk.Box):
         selected_item = slot_selection.get_selected_item()
         if selected_item:
             active_value = selected_item.get_string()
-            index = SLOT_TEXT.index(active_value)
+            index = SLOT_VALUES.index(active_value)
             with open(self.file_name, 'w') as file:
                 file.write(str(index))
