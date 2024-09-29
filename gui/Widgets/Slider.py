@@ -5,8 +5,29 @@ from gi.repository import Gtk
 
 
 class Slider(Gtk.Grid):
-    def __init__(self, file_name: str, min=0, max=100, step=1, marks={}, name="", description=""):
+    def __init__(self, file_name: str, name: str, min=None, max=None, step=None, default=None, marks=None, description=None):
         super().__init__()
+
+        # default values
+        if min is None:
+            min=0
+        if max is None:
+            max=100
+        if step is None:
+            step=1
+        if default is None:
+            default=max
+        if marks is None:
+            marks = {
+                min: "OFF",
+                max: f"{max}",
+            }
+        if not default in marks:
+            marks[default]= f"{default}"
+        if not min in marks:
+            marks[min]= f"{min}"
+        if not max in marks:
+            marks[max]= f"{max}"
 
         self.file_name=file_name
         self.min=min
@@ -14,7 +35,6 @@ class Slider(Gtk.Grid):
         self.step=step
 
         # Slider name
-
         hbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
         if len(description)>0:
             description_label=Gtk.Label(label=description)
@@ -23,15 +43,11 @@ class Slider(Gtk.Grid):
             hbox.append(name_label)
         else:
             name_label=Gtk.Label(label=name)
-            hbox.append(name_label)            
+            hbox.append(name_label)   
+        name_label.set_size_request(250, -1)         
         # self.name.set_halign(Gtk.Align.START)
 
         # Slider
-        if len(marks)==0:
-            marks = {
-                min: "MIN",
-                max: f"{max}",
-            }
         value=self.get_value()
         adjustment = Gtk.Adjustment(value=value, lower=min, upper=max, step_increment=step)
         self.slider = Gtk.Scale(orientation=Gtk.Orientation.HORIZONTAL, adjustment=adjustment)
