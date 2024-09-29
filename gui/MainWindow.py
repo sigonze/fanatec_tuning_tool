@@ -11,10 +11,10 @@ from .TuningPanel import TuningPanel
 from .LateralPanel import LateralPanel
 
 class MainWindow(Gtk.Window):
-    def __init__(self, profile_dir:str):
+    def __init__(self, profile_file:str):
         super().__init__(title="Fanatec Tuning Tool")
         self.set_default_size(900, 500)
-        self.profile_dir=profile_dir
+        self.profile_file=profile_file
 
         css_provider = Gtk.CssProvider()
         css_provider.load_from_data(b"""
@@ -41,37 +41,36 @@ class MainWindow(Gtk.Window):
         hbox.append(self.lateral_panel)
         hbox.append(self.tuning_panel)
 
-        self.load_profile("ac.ini")
+        self.load_profile("default")
 
         self.set_child(hbox)
 
 
-    def load_profile(self,profile_name: str):
+    def load_profile(self,profile: str):
         config = configparser.RawConfigParser(allow_no_value=True)
-        with open(os.path.join(self.profile_dir,profile_name), 'r') as file:
-            content = '[PROFILE]\n' + file.read() 
-            print(f"{content}")
-            profile = []
-            config.optionxform = str
-            config.read_file(StringIO(content))
-            for name, value in config.items('PROFILE'):
-                profile.append((name, int(value)))
-            print(f"{profile}")
-            self.tuning_panel.load_profile(profile)
+        config.optionxform = str
+        config.read(self.profile_file)
+
+        profile_values =[]
+        for name, value in config.items(profile):
+            profile_values.append((name, int(value)))
+        self.tuning_panel.load_profile(profile_values)
+
 
 class App(Gtk.Application):
-    def __init__(self,profile_dir:str):
+    def __init__(self,profile_file:str):
         super().__init__()
         self.window = None
-        self.profile_dir = profile_dir
+        self.profile_file = profile_file
+
 
     def do_activate(self):
         if not self.window:
-            self.window = MainWindow(self.profile_dir)
+            self.window = MainWindow(self.profile_file)
             self.window.set_application(self)
             self.window.connect("destroy", self.on_window_destroy)
-
         self.window.present()
+
 
     def on_window_destroy(self, widget):
         self.window = None

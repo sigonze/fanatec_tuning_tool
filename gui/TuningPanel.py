@@ -40,12 +40,10 @@ class TuningPanel(Gtk.Box):
     def __init__(self):
         super().__init__(orientation=Gtk.Orientation.VERTICAL, spacing=10)
 
-        slot_selector=SlotSelector(os.path.join(WORK_FOLDER,SLOT_FILE))
-        self.append(slot_selector)
+        self.slot_selector=SlotSelector(os.path.join(WORK_FOLDER,SLOT_FILE))
+        self.append(self.slot_selector)
         self.sliders = {}
-
-        for key in FANATEC_FFB_SETTINGS:
-            self.add_slider(key)
+        
 
     def add_slider(self, name: str):
         settings=FANATEC_FFB_SETTINGS.get(name)
@@ -75,12 +73,11 @@ class TuningPanel(Gtk.Box):
         for key in self.sliders:
             profile_dict = dict(profile)
             if not key in profile_dict:
-                print(f"key={key} profile={profile}")
                 self.remove(self.sliders[key])
                 self.sliders[key]=None
         for name, value in profile:
             self.add_slider(name)
-            if not self.sliders[name] is None:
+            if not self.sliders.get(name) is None:
                 self.sliders[name].set_value(value)
 
 

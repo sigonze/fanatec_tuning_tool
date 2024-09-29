@@ -9,7 +9,7 @@ from gui import App
 
 
 def main():
-    app = App(profile_dir="profiles")
+    app = App(profile_file="profiles.ini")
     app.run(None)
 
 if __name__ == "__main__":
