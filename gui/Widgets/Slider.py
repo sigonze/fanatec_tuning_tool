@@ -60,9 +60,9 @@ class Slider(Gtk.Grid):
         self.value_label = Gtk.Label(label=str(value))
 
         # Presentation
-        hbox.set_size_request(150, -1)
+        hbox.set_size_request(100, -1)
         self.slider.set_hexpand(True)
-        self.value_label.set_size_request(50, -1)
+        self.value_label.set_size_request(80, -1)
         
         self.attach(hbox, 0, 1, 1, 1) 
         self.attach(self.slider, 1, 1, 1, 1)
@@ -75,6 +75,15 @@ class Slider(Gtk.Grid):
             with open(self.file_name, 'r') as f:
                 value = int(f.read().strip())
         return value
+    
+    def set_value(self, value: int):
+        if value < self.min:
+            value = self.min
+        if value > self.max:
+            value = self.max
+        snapped_value=(value//self.step)*self.step 
+        self.slider.set_value(snapped_value)
+        self.value_label.set_text(str(snapped_value))
 
 
     def on_slider_changed(self, slider):

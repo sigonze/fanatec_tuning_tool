@@ -7,8 +7,9 @@ from gi.repository import Gtk
 from gui import App
 
 
+
 def main():
-    app = App()
+    app = App(profile_dir="profiles")
     app.run(None)
 
 if __name__ == "__main__":

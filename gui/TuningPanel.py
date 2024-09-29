@@ -1,5 +1,5 @@
-import gi
 import os
+import gi
 
 gi.require_version('Gtk', '4.0')
 from gi.repository import Gtk
@@ -8,8 +8,9 @@ from .Widgets import SlotSelector
 from .Widgets import Slider
 
 
-WORK_FOLDER = "Tests"
+WORK_FOLDER = "tests"
 SLOT_FILE = "SLOT"
+
 
 FANATEC_FFB_SETTINGS = {
     "SEN": { "description": "Sensitivity", 
@@ -41,22 +42,46 @@ class TuningPanel(Gtk.Box):
 
         slot_selector=SlotSelector(os.path.join(WORK_FOLDER,SLOT_FILE))
         self.append(slot_selector)
+        self.sliders = {}
 
-        for key, settings in FANATEC_FFB_SETTINGS.items():
-            description = settings.get("description")
-            min = settings.get("min")
-            max = settings.get("max")
-            step = settings.get("step")
-            default = settings.get("default")
-            marks = settings.get("marks")
-            slider=Slider(
-                file_name=os.path.join(WORK_FOLDER,key), 
-                name=key, 
-                description=description,
-                min=min,
-                max=max,
-                step=step,
-                default=default,
-                marks=marks
-            )
-            self.append(slider)
+        for key in FANATEC_FFB_SETTINGS:
+            self.add_slider(key)
+
+    def add_slider(self, name: str):
+        settings=FANATEC_FFB_SETTINGS.get(name)
+        if not settings is None:
+            if self.sliders.get(name) is None:
+                description = settings.get("description")
+                min = settings.get("min")
+                max = settings.get("max")
+                step = settings.get("step")
+                default = settings.get("default")
+                marks = settings.get("marks")
+                slider=Slider(
+                    file_name=os.path.join(WORK_FOLDER,name), 
+                    name=name, 
+                    description=description,
+                    min=min,
+                    max=max,
+                    step=step,
+                    default=default,
+                    marks=marks
+                )
+                self.sliders[name]=slider
+                self.append(slider)
+
+
+    def load_profile(self,profile: str):
+        for key in self.sliders:
+            profile_dict = dict(profile)
+            if not key in profile_dict:
+                print(f"key={key} profile={profile}")
+                self.remove(self.sliders[key])
+                self.sliders[key]=None
+        for name, value in profile:
+            self.add_slider(name)
+            if not self.sliders[name] is None:
+                self.sliders[name].set_value(value)
+
+
+
