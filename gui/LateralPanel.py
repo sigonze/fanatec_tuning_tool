@@ -85,8 +85,7 @@ class LateralPanel(Gtk.Box):
 
         # remove button
         remove_button = Gtk.Button()
-        remove_icon = Gtk.Image.new_from_icon_name("edit-delete")
-        remove_icon.set_pixel_size(10)
+        remove_icon = Gtk.Image.new_from_icon_name("dialog-cancel")
         remove_button.set_child(remove_icon)
         remove_button.set_tooltip_text(f"delete profile '{profile}'")
         remove_button.connect("clicked", self.on_profile_delete,profile)
