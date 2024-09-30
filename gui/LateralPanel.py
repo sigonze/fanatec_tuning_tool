@@ -3,7 +3,7 @@ gi.require_version('Gtk', '4.0')
 from gi.repository import Gtk
 
 class LateralPanel(Gtk.Box):
-    def __init__(self):
+    def __init__(self,profiles):
         super().__init__(orientation=Gtk.Orientation.VERTICAL, spacing=5)
 
         # keep references to button to add/remove them easily
@@ -34,8 +34,11 @@ class LateralPanel(Gtk.Box):
         spacer = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
         spacer.set_size_request(-1, 10)
 
-        # empty profiles
+        # add profiles
         self.profile_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
+        for profile in profiles:
+            profile_button=self.create_profile_button(profile)
+            self.profile_box.append(profile_button)
 
         # action box
         save_button = Gtk.Button(label="Save")
@@ -95,12 +98,6 @@ class LateralPanel(Gtk.Box):
         button_box.append(remove_button)
         self.profile_buttons[profile]=button_box
         return button_box
-
-    # add profiles
-    def add_profiles(self, profiles):
-        for profile in profiles:
-            profile_button=self.create_profile_button(profile)
-            self.profile_box.append(profile_button)
 
 
     # when a new profile is activated deactivate others

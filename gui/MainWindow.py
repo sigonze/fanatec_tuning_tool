@@ -13,6 +13,23 @@ from .LateralPanel import LateralPanel
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
 
+DEFAULT_VALUES = {
+    "SEN": 2530,
+    "FF": 100,
+    "NDP": 50,
+    "NFR": 0,
+    "NIN": 0,
+    "INT": 11,
+    "FEI": 100,
+    "FOR": 100,
+    "SPR": 100,
+    "DPR": 100,
+    "BLI": 101,
+    "SHO": 100
+}
+
+
+
 class MainWindow(Gtk.Window):
     def __init__(self, profile_file:str):
         super().__init__(title="Fanatec Tuning Tool")
@@ -36,13 +53,11 @@ class MainWindow(Gtk.Window):
         with open(self.profile_file, 'r') as json_file:
             self.profiles = json.load(json_file)
 
-        self.lateral_panel=LateralPanel()
+        self.lateral_panel=LateralPanel(self.profiles.keys())
         self.lateral_panel.set_hexpand(False)
-        self.lateral_panel.add_profiles(self.profiles.keys())
-        
-        self.tuning_panel=TuningPanel()
+
+        self.tuning_panel=TuningPanel(DEFAULT_VALUES)
         self.tuning_panel.set_hexpand(True)
-        self.tuning_panel.load_profile(self.profiles["Default"])
 
         hbox.append(self.lateral_panel)
         hbox.append(self.tuning_panel)

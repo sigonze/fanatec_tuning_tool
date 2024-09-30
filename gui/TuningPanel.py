@@ -18,7 +18,7 @@ script_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 class TuningPanel(Gtk.Box):
-    def __init__(self):
+    def __init__(self, default_values):
         super().__init__(orientation=Gtk.Orientation.VERTICAL, spacing=10)
 
         json_file_path = os.path.join(script_dir, 'fanatec_ffb_tuning.json')
@@ -28,7 +28,8 @@ class TuningPanel(Gtk.Box):
         self.slot_selector=SlotSelector(os.path.join(WORK_FOLDER,SLOT_FILE))
         self.append(self.slot_selector)
         self.sliders = {}
-        
+        self.load_profile(default_values)
+
 
     def add_slider(self, name: str):
         settings=self.fanatec_ffb_settings.get(name)
