@@ -40,13 +40,10 @@ class Slider(Gtk.Grid):
             description_label=Gtk.Label(label=description)
             hbox.append(description_label)
             name_label=Gtk.Label(label=f"({name})")
-            hbox.append(name_label)
         else:
             name_label=Gtk.Label(label=name)
-            hbox.append(name_label)   
-        name_label.set_size_request(250, -1)         
-        # self.name.set_halign(Gtk.Align.START)
-
+        hbox.append(name_label)
+        
         # Slider
         value=self.get_value()
         adjustment = Gtk.Adjustment(value=value, lower=min, upper=max, step_increment=step)
@@ -55,12 +52,13 @@ class Slider(Gtk.Grid):
 
         for l, v in marks.items():
             self.slider.add_mark(v, Gtk.PositionType.TOP, l)
+            self.slider.set_size_request(200, -1)
 
         # Slider value
         self.value_label = Gtk.Label(label=str(value))
 
         # Presentation
-        hbox.set_size_request(100, -1)
+        hbox.set_size_request(200, -1)
         self.slider.set_hexpand(True)
         self.value_label.set_size_request(80, -1)
         

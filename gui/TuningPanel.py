@@ -56,14 +56,13 @@ class TuningPanel(Gtk.Box):
 
     def load_profile(self,profile: str):
         for key in self.sliders:
-            profile_dict = dict(profile)
-            if not key in profile_dict:
+            if not key in profile.keys():
                 self.remove(self.sliders[key])
                 self.sliders[key]=None
-        for name, value in profile:
-            self.add_slider(name)
-            if not self.sliders.get(name) is None:
-                self.sliders[name].set_value(value)
+        for key in profile:
+            self.add_slider(key)
+            if not self.sliders.get(key) is None:
+                self.sliders[key].set_value(profile[key])
 
 
 
