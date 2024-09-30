@@ -16,7 +16,7 @@ script_dir = os.path.dirname(os.path.abspath(__file__))
 class MainWindow(Gtk.Window):
     def __init__(self, profile_file:str):
         super().__init__(title="Fanatec Tuning Tool")
-        self.set_default_size(900, 500)
+        self.set_default_size(1000, 500)
         self.profile_file=profile_file
 
         css_provider = Gtk.CssProvider()
@@ -37,23 +37,17 @@ class MainWindow(Gtk.Window):
             self.profiles = json.load(json_file)
 
         self.lateral_panel=LateralPanel()
+        self.lateral_panel.set_hexpand(False)
         self.lateral_panel.add_profiles(self.profiles.keys())
+        
         self.tuning_panel=TuningPanel()
         self.tuning_panel.set_hexpand(True)
+        self.tuning_panel.load_profile(self.profiles["Default"])
 
         hbox.append(self.lateral_panel)
         hbox.append(self.tuning_panel)
 
-        self.load_profile("Default")
-
         self.set_child(hbox)
-
-
-    def load_profile(self,profile: str):
-        if profile not in self.profiles:
-            raise ValueError(f"Profile '{profile}' not found in the JSON file.")
-
-        self.tuning_panel.load_profile(self.profiles[profile])
 
 
 class App(Gtk.Application):
