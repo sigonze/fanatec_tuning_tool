@@ -14,11 +14,10 @@ class LateralPanel(Gtk.Box):
         info_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=30)
         refresh_button = Gtk.Button()
         refresh_icon = Gtk.Image.new_from_icon_name("view-refresh")
-        refresh_icon.set_pixel_size(10)
         refresh_button.set_child(refresh_icon)
         refresh_button.set_tooltip_text("Search hardware")
 
-        load_icon = Gtk.Image.new_from_icon_name("go-up")
+        load_icon = Gtk.Image.new_from_icon_name("go-next")
         load_button = Gtk.Button()
         load_button.set_child(load_icon)
         load_button.set_tooltip_text("Retrieve from hardware")
@@ -50,7 +49,6 @@ class LateralPanel(Gtk.Box):
 
         add_button = Gtk.Button()
         add_icon = Gtk.Image.new_from_icon_name("list-add")
-        add_icon.set_pixel_size(10)
         add_button.set_child(add_icon)
         add_button.connect("clicked", self.on_profile_add)
 
