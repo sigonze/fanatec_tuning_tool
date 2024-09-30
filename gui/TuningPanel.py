@@ -1,4 +1,6 @@
 import os
+import json
+
 import gi
 
 gi.require_version('Gtk', '4.0')
@@ -12,33 +14,16 @@ WORK_FOLDER = "tests"
 SLOT_FILE = "SLOT"
 
 
-FANATEC_FFB_SETTINGS = {
-    "SEN": { "description": "Sensitivity", 
-             "min": 10, 
-             "max": 2530,
-             "default": 2530,
-             "step": 10,
-             "marks": { 360: "360", 1080: "1080", 2530: "AUTO" } },
-    "FF" : { "description": "Force Feedback", "default": 100 },
-    "NDP": { "description": "Natural Damper", "default": 50 },
-    "NFR": { "description": "Natural Friction" },
-    "NIN": { "description": "Natural Inertia", "max": 20, "default": 11 },
-    "INT": { "description": "Force Feedback Interpolation" },
-    "FEI": { "description": "Force Effect Intensity" },
-    "FOR": { "description": "Force", "max": 120, "default": 100 },
-    "SPR": { "description": "Spring", "max": 120, "default": 100 },
-    "DPR": { "description": "Damper", "max": 120, "default": 100 },
-    "BLI": { "description": "Brake Level Indicator", 
-             "min": 1,
-             "max": 101,
-             "marks": { 101: "OFF" } },
-    "SHO": { "description": "Shock" }
-}
+script_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 class TuningPanel(Gtk.Box):
     def __init__(self):
         super().__init__(orientation=Gtk.Orientation.VERTICAL, spacing=10)
+
+        json_file_path = os.path.join(script_dir, 'fanatec_ffb_tuning.json')
+        with open(json_file_path, 'r') as json_file:
+            self.fanatec_ffb_settings = json.load(json_file)
 
         self.slot_selector=SlotSelector(os.path.join(WORK_FOLDER,SLOT_FILE))
         self.append(self.slot_selector)
@@ -46,7 +31,7 @@ class TuningPanel(Gtk.Box):
         
 
     def add_slider(self, name: str):
-        settings=FANATEC_FFB_SETTINGS.get(name)
+        settings=self.fanatec_ffb_settings.get(name)
         if not settings is None:
             if self.sliders.get(name) is None:
                 description = settings.get("description")

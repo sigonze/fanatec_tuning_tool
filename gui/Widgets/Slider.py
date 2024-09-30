@@ -19,15 +19,15 @@ class Slider(Gtk.Grid):
             default=max
         if marks is None:
             marks = {
-                min: "OFF",
-                max: f"{max}",
+                "OFF": min,
+                f"{max}": max,
             }
-        if not default in marks:
-            marks[default]= f"{default}"
-        if not min in marks:
-            marks[min]= f"{min}"
-        if not max in marks:
-            marks[max]= f"{max}"
+        if not default in marks.values():
+            marks[f"{default}"]=default
+        if not min in marks.values():
+            marks[f"{min}"]=min
+        if not max in marks.values():
+            marks[f"{max}"]=max
 
         self.file_name=file_name
         self.min=min
@@ -53,7 +53,7 @@ class Slider(Gtk.Grid):
         self.slider = Gtk.Scale(orientation=Gtk.Orientation.HORIZONTAL, adjustment=adjustment)
         self.slider.connect("value-changed", self.on_slider_changed)
 
-        for v, l in marks.items():
+        for l, v in marks.items():
             self.slider.add_mark(v, Gtk.PositionType.TOP, l)
 
         # Slider value

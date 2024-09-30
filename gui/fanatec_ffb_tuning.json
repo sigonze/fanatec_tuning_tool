@@ -1,0 +1,71 @@
+{
+    "SEN": {
+        "description": "Sensitivity",
+        "min": 90,
+        "max": 2530,
+        "default": 2530,
+        "step": 10,
+        "marks": {
+            "360": 360,
+            "1080": 1080,
+            "AUTO": 2530
+        }
+    },
+    "FF": {
+        "description": "Force Feedback",
+        "default": 100
+    },
+    "NDP": {
+        "description": "Natural Damper",
+        "default": 50
+    },
+    "NFR": {
+        "description": "Natural Friction",
+        "default": 0
+    },
+    "NIN": {
+        "description": "Natural Inertia",
+        "default": 0
+    },
+    "INT": {
+        "description": "Force Feedback Interpolation",
+        "max": 20,
+        "default": 11
+    },
+    "FEI": {
+        "description": "Force Effect Intensity",
+        "step": 10,
+        "marks": {
+            "0": 0
+        }
+    },
+    "FOR": {
+        "description": "Force",
+        "step": 10,
+        "max": 120,
+        "default": 100
+    },
+    "SPR": {
+        "description": "Spring",
+        "step": 10,
+        "max": 120,
+        "default": 100
+    },
+    "DPR": {
+        "description": "Damper",
+        "step": 10,
+        "max": 120,
+        "default": 100
+    },
+    "BLI": {
+        "description": "Brake Level Indicator",
+        "min": 1,
+        "max": 101,
+        "marks": {
+            "OFF": 101
+        }
+    },
+    "SHO": {
+        "description": "Shock"
+    }
+}
