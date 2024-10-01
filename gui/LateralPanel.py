@@ -8,7 +8,7 @@ class LateralPanel(Gtk.Box):
 
         # keep references to button to add/remove them easily
         self.profile_buttons = {}
-        self.toggle_buttons = []
+        self.selected_button = None
 
         # create info box
         info_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=30)
@@ -81,11 +81,10 @@ class LateralPanel(Gtk.Box):
         button.set_tooltip_text(f"load profile '{profile}'")
         button.set_hexpand(True)
         button.connect("toggled", self.on_profile_change)
-        self.toggle_buttons.append(button)
 
         # remove button
         remove_button = Gtk.Button()
-        remove_icon = Gtk.Image.new_from_icon_name("dialog-cancel")
+        remove_icon = Gtk.Image.new_from_icon_name("edit-delete")
         remove_button.set_child(remove_icon)
         remove_button.set_tooltip_text(f"delete profile '{profile}'")
         remove_button.connect("clicked", self.on_profile_delete,profile)
@@ -102,9 +101,12 @@ class LateralPanel(Gtk.Box):
     # when a new profile is activated deactivate others
     def on_profile_change(self,button):
         if button.get_active():
-            for b in self.toggle_buttons:
-                if b != button:
-                    b.set_active(False)
+            if button != self.selected_button:
+                if not self.selected_button is None:
+                    self.selected_button.set_active(False)
+                self.selected_button = button
+        elif button == self.selected_button:
+            self.selected_button = None
 
 
     # profile deletion
@@ -130,4 +132,4 @@ class LateralPanel(Gtk.Box):
             self.profile_box.append(profile_button)
             self.entry.set_text("")
             self.entry.set_visible(False)
-            self.toggle_buttons[-1].set_active(True)
+            profile_button.get_first_child().set_active(True)
