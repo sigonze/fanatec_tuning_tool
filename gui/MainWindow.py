@@ -50,11 +50,13 @@ class MainWindow(Gtk.Window):
         hbox.set_margin_start(20)
         hbox.set_margin_end(20)
 
-        with open(self.profile_file, 'r') as json_file:
-            self.profiles = json.load(json_file)
+        self.profiles = self.load_profiles()
 
         self.lateral_panel=LateralPanel(self.profiles.keys())
         self.lateral_panel.set_hexpand(False)
+        self.lateral_panel.connect("profile-added", self.on_profile_added)
+        self.lateral_panel.connect("profile-removed", self.on_profile_removed)
+        self.lateral_panel.connect("profile-selected", self.on_profile_selected)
 
         self.tuning_panel=TuningPanel(DEFAULT_VALUES)
         self.tuning_panel.set_hexpand(True)
@@ -63,6 +65,32 @@ class MainWindow(Gtk.Window):
         hbox.append(self.tuning_panel)
 
         self.set_child(hbox)
+
+
+    def load_profiles(self):
+        with open(self.profile_file, 'r') as json_file:
+            return json.load(json_file)
+
+
+    def save_profiles(self):
+        with open(self.profile_file, 'w') as json_file:
+            json.dump(self.profiles, json_file, indent=4)
+
+
+    def on_profile_added(self, profile_name):
+        self.profiles[profile_name] = {}
+        self.save_profiles()
+
+
+    def on_profile_removed(self, profile_name):
+        if profile_name in self.profiles:
+            del self.profiles[profile_name]
+            self.save_profiles()
+
+
+    def on_profile_selected(self, profile_name):
+        if profile_name in self.profiles:
+            self.tuning_panel.load_profile(self.profiles[profile_name])
 
 
 class App(Gtk.Application):
