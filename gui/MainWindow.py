@@ -29,6 +29,13 @@ DEFAULT_SETTINGS = {
     "SHO": 100
 }
 
+# DEFAULT_INFO = {
+#     "Base": "CSL DD",
+#     "Wheel": "McLaren GT3 V2"
+# }
+DEFAULT_INFO = {
+    "MODE": "*** DEMO ***"
+}
 
 
 class MainWindow(Gtk.Window):
@@ -58,6 +65,7 @@ class MainWindow(Gtk.Window):
         self.lateral_panel.connect("profile-added", self.on_profile_added)
         self.lateral_panel.connect("profile-removed", self.on_profile_removed)
         self.lateral_panel.connect("profile-selected", self.on_profile_selected)
+        self.lateral_panel.update_info(DEFAULT_INFO)
 
         self.settings = DEFAULT_SETTINGS
         self.tuning_panel=TuningPanel(self.settings)
