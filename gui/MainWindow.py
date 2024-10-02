@@ -96,8 +96,9 @@ class MainWindow(Gtk.Window):
 
 
     def on_profile_added(self, profile_name):
-        self.settings = tuning_panel.get_settings()
-        self.self.save_profiles()
+        self.settings = self.tuning_panel.get_settings()
+        self.profiles[profile_name] = self.settings
+        self.save_profiles()
 
 
     def on_profile_removed(self, profile_name):
