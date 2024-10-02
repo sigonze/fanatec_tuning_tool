@@ -42,23 +42,16 @@ class LateralPanel(Gtk.Box):
         filler = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
         filler.set_vexpand(True)
 
-        # action box
-        # save_button = Gtk.Button(label="Save")
-        # apply_button = Gtk.Button(label="Apply")
-
-        # action_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=5)
-        # save_button.set_hexpand(True)
-        # apply_button.set_hexpand(True)
-        # action_box.append(save_button)
-        # action_box.append(apply_button)
-
-        # create the panel
+        # Create the panel
         self.append(info_box)
         self.append(spacer)
         self.append(self.profile_list)
         self.append(filler)
-        # self.append(action_box)
+
     
     def connect(self, event_name, callback: Callable[[str], None]):
         if event_name.startswith("profile-"):
             self.profile_list.connect(event_name,callback)
+    
+    def get_selected_profile(self):
+        return self.profile_list.get_selected_profile()

@@ -1,17 +1,14 @@
-import os
-import json
-
 import gi
-
 gi.require_version('Gtk', '4.0')
 from gi.repository import Gtk
 
+import os
+import json
+from typing import Callable
+
+
 from .Widgets import SlotSelector
 from .Widgets import Slider
-
-
-WORK_FOLDER = "tests"
-SLOT_FILE = "SLOT"
 
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -28,12 +25,12 @@ class TuningPanel(Gtk.Box):
         self.slot_selector=SlotSelector()
         self.append(self.slot_selector)
         self.sliders = {}
-        self.load_profile(default_values)
+        self.update_settings(default_values)
 
 
     def add_slider(self, name: str):
         settings=self.fanatec_ffb_settings.get(name)
-        if not settings is None:
+        if settings:
             if self.sliders.get(name) is None:
                 description = settings.get("description")
                 min = settings.get("min")
@@ -42,7 +39,6 @@ class TuningPanel(Gtk.Box):
                 default = settings.get("default")
                 marks = settings.get("marks")
                 slider=Slider(
-                    file_name=os.path.join(WORK_FOLDER,name), 
                     name=name, 
                     description=description,
                     min=min,
@@ -55,15 +51,28 @@ class TuningPanel(Gtk.Box):
                 self.append(slider)
 
 
-    def load_profile(self,profile: str):
+    def update_settings(self,settings: str):
         for key in self.sliders:
-            if not key in profile.keys():
+            if not key in settings.keys():
                 self.remove(self.sliders[key])
                 self.sliders[key]=None
-        for key in profile:
-            self.add_slider(key)
-            if not self.sliders.get(key) is None:
-                self.sliders[key].set_value(profile[key])
-
-
-
+        for key in settings:
+            value = settings[key]
+            if key == "SLOT":
+                self.slot_selector.set_value(value)
+            else:
+                self.add_slider(key)
+                if self.sliders.get(key):
+                    self.sliders[key].set_value(value)
+    
+    def get_settings(self):
+        settings = {}
+        settings["SLOT"] = self.slot_selector.get_value()
+        for setting, slider in self.sliders.items():
+            settings[setting] = slider.get_value()
+        return settings
+    
+    def connect(self, event_name, callback: Callable[[str], None]):
+        self.slot_selector.connect(event_name, callback)
+        for slider in self.sliders.values():
+            slider.connect(event_name, callback)

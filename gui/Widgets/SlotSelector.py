@@ -1,7 +1,8 @@
-import os
 import gi
 gi.require_version('Gtk', '4.0')
 from gi.repository import Gtk
+
+from typing import Callable
 
 
 SLOT_TEXT = [
@@ -18,6 +19,10 @@ SLOT_TEXT = [
 class SlotSelector(Gtk.Box):
     def __init__(self):
         super().__init__(orientation=Gtk.Orientation.HORIZONTAL)
+
+        self.callbacks = {
+            "setting-updated": None
+        }
 
         self.slot_selection = Gtk.DropDown.new_from_strings(SLOT_TEXT)
         self.slot_selection.connect("notify::selected-item", self.on_slot_changed)
@@ -39,14 +44,20 @@ class SlotSelector(Gtk.Box):
 
 
     def set_value(self,slot_value):
-        self.slot_selection.set_selected(slot_value)
+        if slot_value < 0 or slot_value > len(SLOT_TEXT)+1:
+            self.slot_selection.set_selected(0)
+        else:
+            self.slot_selection.set_selected(slot_value+1)
+
+
+    def connect(self, event_name, callback: Callable[[str], None]):
+        assert event_name in self.callbacks.keys()
+        self.callbacks[event_name]=callback
 
 
     def on_slot_changed(self, slot_selection, param):
         selected_item = slot_selection.get_selected_item()
-        print(selected_item)
-        # if selected_item:
-        #     active_value = selected_item.get_string()
-        #     index = SLOT_VALUES.index(active_value)
-        #     with open(self.file_name, 'w') as file:
-        #         file.write(str(index))
+        if selected_item:
+            value = self.get_value()
+            if self.callbacks["setting-updated"]:
+                self.callbacks["setting-updated"]({ "SLOT": value })

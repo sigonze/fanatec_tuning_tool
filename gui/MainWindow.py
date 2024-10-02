@@ -13,7 +13,8 @@ from .LateralPanel import LateralPanel
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
 
-DEFAULT_VALUES = {
+DEFAULT_SETTINGS = {
+    "SLOT": -1,
     "SEN": 2530,
     "FF": 100,
     "NDP": 50,
@@ -58,8 +59,10 @@ class MainWindow(Gtk.Window):
         self.lateral_panel.connect("profile-removed", self.on_profile_removed)
         self.lateral_panel.connect("profile-selected", self.on_profile_selected)
 
-        self.tuning_panel=TuningPanel(DEFAULT_VALUES)
+        self.settings = DEFAULT_SETTINGS
+        self.tuning_panel=TuningPanel(self.settings)
         self.tuning_panel.set_hexpand(True)
+        self.tuning_panel.connect("setting-updated", self.on_profile_updated)
 
         hbox.append(self.lateral_panel)
         hbox.append(self.tuning_panel)
@@ -77,9 +80,16 @@ class MainWindow(Gtk.Window):
             json.dump(self.profiles, json_file, indent=4)
 
 
+    def update_profile(self):
+        profile_name = self.lateral_panel.get_selected_profile()
+        if profile_name:
+            self.profiles[profile_name] = self.settings
+            self.save_profiles()
+
+
     def on_profile_added(self, profile_name):
-        self.profiles[profile_name] = {}
-        self.save_profiles()
+        self.settings = tuning_panel.get_settings()
+        self.self.save_profiles()
 
 
     def on_profile_removed(self, profile_name):
@@ -90,7 +100,13 @@ class MainWindow(Gtk.Window):
 
     def on_profile_selected(self, profile_name):
         if profile_name in self.profiles:
-            self.tuning_panel.load_profile(self.profiles[profile_name])
+            self.settings = self.profiles[profile_name]
+            self.tuning_panel.update_settings(self.profiles[profile_name])
+
+
+    def on_profile_updated(self, setting_update):
+        self.settings.update(setting_update)
+        self.update_profile()
 
 
 class App(Gtk.Application):

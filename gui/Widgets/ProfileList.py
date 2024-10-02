@@ -39,6 +39,10 @@ class ProfileList(Gtk.Box):
         if row:
             self.list_box.select_row(row)
 
+    def get_selected_profile(self):
+        if self.selected_button:
+            return self.selected_button.get_label()
+        return None
 
     def remove_profile(self, profile_text):
         index = len(self.profiles)
@@ -72,10 +76,10 @@ class ProfileList(Gtk.Box):
         self.profile_box.append(hbox)
         self.profiles[profile_text]=hbox
         
-        profile_button.set_active(True)
-
         if self.callbacks["profile-added"]:
             self.callbacks["profile-added"](profile_text)
+        
+        return profile_button
 
 
     def connect(self, event_name, callback: Callable[[str], None]):
@@ -87,8 +91,10 @@ class ProfileList(Gtk.Box):
         # Add profile to the ListBox
         new_profile_text = new_profile.get_text()
         if new_profile_text and not new_profile_text in self.profiles:
-            self.add_profile(new_profile_text)
+            button = self.add_profile(new_profile_text)
+            button.set_active(True)
             self.new_profile_entry.set_text("")
+
 
     def on_delete_button_clicked(self, button, profile_text):
         # Remove the profile provided by the index

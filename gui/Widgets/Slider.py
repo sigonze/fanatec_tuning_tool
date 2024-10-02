@@ -1,12 +1,19 @@
-import os
 import gi
 gi.require_version('Gtk', '4.0')
 from gi.repository import Gtk
 
+from typing import Callable
+
 
 class Slider(Gtk.Grid):
-    def __init__(self, file_name: str, name: str, min=None, max=None, step=None, default=None, marks=None, description=None):
+    def __init__(self, name: str, min=None, max=None, step=None, default=None, marks=None, description=None):
         super().__init__()
+
+        self.callbacks = {
+            "setting-updated": None
+        }
+
+        self.name = name
 
         # default values
         if min is None:
@@ -29,7 +36,6 @@ class Slider(Gtk.Grid):
         if not max in marks.values():
             marks[f"{max}"]=max
 
-        self.file_name=file_name
         self.min=min
         self.max=max
         self.step=step
@@ -45,7 +51,7 @@ class Slider(Gtk.Grid):
         hbox.append(name_label)
         
         # Slider
-        value=self.get_value()
+        value=min
         adjustment = Gtk.Adjustment(value=value, lower=min, upper=max, step_increment=step)
         self.slider = Gtk.Scale(orientation=Gtk.Orientation.HORIZONTAL, adjustment=adjustment)
         self.slider.connect("value-changed", self.on_slider_changed)
@@ -67,13 +73,15 @@ class Slider(Gtk.Grid):
         self.attach(self.value_label, 2, 1, 1, 1) 
 
 
+    def connect(self, event_name, callback: Callable[[str], None]):
+        assert event_name in self.callbacks.keys()
+        self.callbacks[event_name]=callback
+
+
     def get_value(self):
-        value = 0
-        if os.path.exists(self.file_name):
-            with open(self.file_name, 'r') as f:
-                value = int(f.read().strip())
-        return value
-    
+        return int(self.slider.get_value())
+
+
     def set_value(self, value: int):
         if value < self.min:
             value = self.min
@@ -89,5 +97,5 @@ class Slider(Gtk.Grid):
         snapped_value=(value//self.step)*self.step 
         self.slider.set_value(snapped_value)
         self.value_label.set_text(str(snapped_value))
-        with open(self.file_name, 'w') as f:
-            f.write(str(snapped_value))
+        if self.callbacks["setting-updated"]:
+            self.callbacks["setting-updated"]({ self.name: snapped_value })
