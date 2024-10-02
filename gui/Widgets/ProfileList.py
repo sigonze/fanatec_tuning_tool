@@ -14,20 +14,19 @@ class ProfileList(Gtk.Box):
             "profile-removed": None,
             "profile-selected": None
         }
-        # Create a ListBox to hold the items
-        self.list_box = Gtk.ListBox()
-        self.list_box.set_selection_mode(Gtk.SelectionMode.SINGLE)
-        self.append(self.list_box)
 
         self.profiles = {}
+        self.selected_button = None
 
-        # Create an Entry for adding new prfoile
+        # Create Profile List
+        self.profile_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
+        self.append(self.profile_box)
+
+        # Create an Entry for adding new profile
         self.new_profile_entry = Gtk.Entry()
         self.new_profile_entry.set_placeholder_text("Add new profile...")
         self.new_profile_entry.connect("activate", self.on_add_profile) 
-
-        # Add the Entry to the ListBox
-        self.list_box.append(self.new_profile_entry)
+        self.append(self.new_profile_entry)
 
 
     def create_profiles(self, profiles):
@@ -57,23 +56,23 @@ class ProfileList(Gtk.Box):
         hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=5)
 
         # Create a label for the profile
-        label = Gtk.Button(label=profile_text)
-        label.connect("clicked", self.on_select_profile)
-        label.set_hexpand(True)
-        hbox.append(label)
+        profile_button = Gtk.ToggleButton(label=f"{profile_text}")
+        profile_button.set_tooltip_text(f"load profile '{profile_text}'")
+        profile_button.set_hexpand(True)
+        profile_button.connect("toggled", self.on_profile_select)
+        hbox.append(profile_button)
 
-        # Create a delete button
+        # remove button
         delete_button = Gtk.Button(label="x")
         delete_button.connect("clicked", self.on_delete_button_clicked,profile_text)
+        delete_button.set_tooltip_text(f"delete profile '{profile_text}'")
         hbox.append(delete_button)
 
-        # Add the box to the list and select it
-        index = len(self.profiles)
-        row = Gtk.ListBoxRow()
-        row.set_child(hbox)
-        self.list_box.insert(row, index)
-        self.profiles[profile_text] = row
-        self.select_profile(profile_text)
+        # Add to the profile list
+        self.profile_box.append(hbox)
+        self.profiles[profile_text]=hbox
+        
+        profile_button.set_active(True)
 
         if self.callbacks["profile-added"]:
             self.callbacks["profile-added"](profile_text)
@@ -93,10 +92,21 @@ class ProfileList(Gtk.Box):
 
     def on_delete_button_clicked(self, button, profile_text):
         # Remove the profile provided by the index
-        self.remove_profile(profile_text)
+        if self.profiles.get(profile_text):
+            self.profile_box.remove(self.profiles[profile_text])
+            del self.profiles[profile_text]
+            if self.callbacks["profile-removed"]:
+                self.callbacks["profile-removed"](profile_text)
 
-    def on_select_profile(self, button):
-        profile_text=button.get_label()
-        self.select_profile(profile_text)
-        if self.callbacks["profile-selected"]:
-            self.callbacks["profile-selected"](profile_text)
+    def on_profile_select(self, button):
+        if button.get_active():
+            if button != self.selected_button:
+                previous_selected = self.selected_button
+                self.selected_button = button
+                if previous_selected:
+                    previous_selected.set_active(False)
+                if self.callbacks["profile-selected"]:
+                    self.callbacks["profile-selected"](button.get_label())
+        elif button == self.selected_button:
+            button.set_active(True)
+
