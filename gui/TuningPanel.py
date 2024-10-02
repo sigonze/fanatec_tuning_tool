@@ -25,7 +25,7 @@ class TuningPanel(Gtk.Box):
         with open(json_file_path, 'r') as json_file:
             self.fanatec_ffb_settings = json.load(json_file)
 
-        self.slot_selector=SlotSelector(os.path.join(WORK_FOLDER,SLOT_FILE))
+        self.slot_selector=SlotSelector()
         self.append(self.slot_selector)
         self.sliders = {}
         self.load_profile(default_values)
