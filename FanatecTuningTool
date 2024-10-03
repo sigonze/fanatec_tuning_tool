@@ -4,8 +4,33 @@ import gi
 gi.require_version('Gtk', '4.0')
 from gi.repository import Gtk
 
-from gui import App
 
+from gui import MainWindow
+from hal import FanatecDeviceMonitor
+
+
+class App(Gtk.Application):
+    def __init__(self,profile_file:str):
+        super().__init__()
+        self.window = None
+        self.profile_file = profile_file
+
+
+    def do_activate(self):
+        if not self.window:
+            self.window = MainWindow(self.profile_file)
+            self.window.set_application(self)
+            self.window.connect("destroy", self.on_window_destroy)
+        self.window.present()
+
+        self.monitor = FanatecDeviceMonitor()
+        self.monitor.connect("device-connected", self.window.on_device_connected)
+        self.monitor.connect("device-disconnected", self.window.on_device_disconnected)
+        self.monitor.start()
+
+
+    def on_window_destroy(self, widget):
+        self.window = None
 
 
 def main():

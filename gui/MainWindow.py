@@ -114,21 +114,8 @@ class MainWindow(Gtk.Window):
             self.profiles[profile_name].update(setting_update)
             self.__save_profiles()
 
+    def on_device_connected(self, device_info):
+        self.lateral_panel.update_info(device_info)
 
-class App(Gtk.Application):
-    def __init__(self,profile_file:str):
-        super().__init__()
-        self.window = None
-        self.profile_file = profile_file
-
-
-    def do_activate(self):
-        if not self.window:
-            self.window = MainWindow(self.profile_file)
-            self.window.set_application(self)
-            self.window.connect("destroy", self.on_window_destroy)
-        self.window.present()
-
-
-    def on_window_destroy(self, widget):
-        self.window = None
+    def on_device_disconnected(self, device_info):
+        self.lateral_panel.update_info(device_info)
