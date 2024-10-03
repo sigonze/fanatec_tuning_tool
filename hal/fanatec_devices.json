@@ -1,12 +1,16 @@
 {
-    "0E03": "CSL Elite",
-    "0005": "CSL Elite PS4",
-    "0020": "CSL DD",
-    "6204": "CSL Elite Pedals",
-    "0001": "ClubSport V2",
-    "0004": "ClubSport V2.5",
-    "183B": "ClubSport Pedals V3",
-    "0006": "Podium DD1",
-    "0007": "Podium DD2",
-    "0011": "CSR Elite"
+    "MODEL_ID": {
+        "0E03": "CSL Elite",
+        "0005": "CSL Elite PS4",
+        "0020": "CSL DD",
+        "6204": "CSL Elite Pedals",
+        "0001": "ClubSport V2",
+        "0004": "ClubSport V2.5",
+        "183B": "ClubSport Pedals V3",
+        "0006": "Podium DD1",
+        "0007": "Podium DD2",
+        "0011": "CSR Elite"
+    },
+    "WHEEL_ID": {
+    }
 }

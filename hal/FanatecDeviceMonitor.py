@@ -46,3 +46,11 @@ class FanatecDeviceMonitor:
             self.devices.append(fanatec_device)
         except:
             pass
+
+
+    def __device_removed(self, device):
+        try:
+            fanatec_device = FanatecDevice(device)
+            self.devices.append(fanatec_device)
+        except:
+            pass

@@ -1,4 +1,6 @@
 import pyudev
+import os
+import re
 
 
 SYSFS_PATH="/sys/module/hid_fanatec/drivers"
@@ -15,7 +17,8 @@ json_file_path = os.path.join(script_dir, 'fanatec_ffb_tuning.json')
 with open(json_file_path, 'r') as json_file:
         data = json.load(file)
 
-FANATEC_MODEL_ID = {int(key, 16): value for key, value in data.items()}
+FANATEC_MODEL_ID = {int(key, 16): value for key, value in data["MODEL_ID"].items()}
+FANATEC_WHEEL_ID = {int(key, 16): value for key, value in data["WHEEL_ID"].items()}
 
 
 class FanatecDevice:
@@ -29,9 +32,36 @@ class FanatecDevice:
             raise "unsupported device"
 
         self.device = device
+        model_id_str = self.device.get("ID_MODEL_ID")
+        self.model_id = int(device_id_str,16)
+
+        expected_dir = f"{SYSFS_PREFIX}:{vendor_id:04X}:{self.model_id:04X}"
 
 
-    def get_model_str(self) -> str:
+    # List all entries in the base path
+    for dirname in os.listdir(base_path):
+        # Check if the entry is a directory and matches the regex pattern
+        full_path = os.path.join(base_path, dirname)
+        if os.path.isdir(full_path) and regex_pattern.match(dirname):
+            matching_dirs.append(full_path)
+
+    return matching_dirs
+
+    def get_id(self):
+
+
+
+    def info(self):
+        info = {}
+        base = self.__get_model_str()
+        if base:
+            info.update({ "Base": base })
+        wheel = self.__get_wheel_str()
+        if wheel:
+            info.update({ "Wheel": wheel })
+
+
+    def __get_model_str(self) -> str:
         device_id_str = self.device.get("ID_MODEL_ID")
         if device_id_str:
             device_id = int(device_id_str,16)
