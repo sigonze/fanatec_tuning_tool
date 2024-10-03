@@ -12,9 +12,11 @@ class FanatecDeviceMonitor:
         self.devices = {}
         self.__list_devices()
 
+        self.context = pyudev.Context()
+        self.monitor = pyudev.Monitor.from_netlink(self.context)
+        self.monitor.filter_by(subsystem='hid')
+        self.observer = pyudev.MonitorObserver(self.monitor, self.__on_device_event)
 
-    # def __del__(self):
-    #     self.stop_monitoring()
 
     def __list_devices(self):
         devices = self.context.list_devices(subsystem='hid')
@@ -22,15 +24,23 @@ class FanatecDeviceMonitor:
             self.__device_added(device)
 
 
-    def start_monitoring(self):
-        self.monitor = pyudev.Monitor.from_netlink(self.context)
-        self.monitor.filter_by(subsystem='hid')  # Filter for input devices
-        for action, device in self.monitor:
-            if action == 'add':
-                self.__device_added(device)
-            elif action == 'remove':
-                self.__device_removed(device)
+    def start(self):
+        # Start the observer
+        self.observer.start()
+        print("Device monitoring started...")
 
+
+    def stop(self):
+        # Stop the observer
+        self.observer.stop()
+        print("Device monitoring stopped.")
+
+
+    def __on_device_event(self, event, device):
+        if event == 'add':
+            self.__device_added(device)
+        elif event == 'remove':
+            self.__device_removed(device)
 
 
     def __device_added(self, device):
