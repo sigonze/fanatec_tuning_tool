@@ -23,7 +23,7 @@ SYSFS_PREFIX='0003'
 class FanatecDeviceMonitor:
     def __init__(self):
         self.devices = []
-        self.list_devices()
+        self.__list_devices()
 
         self.context = pyudev.Context()
         self.monitor = pyudev.Monitor.from_netlink(self.context)
@@ -53,7 +53,7 @@ class FanatecDeviceMonitor:
         return "<unknown>"
 
 
-    def list_devices(self):
+    def __list_devices(self):
         devices = context.list_devices(subsystem='input')
         for device in devices:
             if is_fanatec_device(device):
@@ -69,7 +69,7 @@ class FanatecDeviceMonitor:
         self.observer.stop()
 
 
-    def device_event(self, event, device):
+    def __device_event(self, event, device):
         if is_fanatec_device(device):
             if event=='add':
                 self.devices.append(device)

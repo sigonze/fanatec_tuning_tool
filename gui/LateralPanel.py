@@ -19,9 +19,8 @@ class LateralPanel(Gtk.Box):
         spacer = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
         spacer.set_size_request(-1, 10)
 
-        # Add profiles
-        self.profile_list = ProfileList()
-        self.profile_list.create_profiles(profiles)
+        # Create profile list
+        self.profile_list = ProfileList(profiles)
 
         # Filler
         filler = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)

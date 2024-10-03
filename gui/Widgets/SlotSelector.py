@@ -25,7 +25,7 @@ class SlotSelector(Gtk.Box):
         }
 
         self.slot_selection = Gtk.DropDown.new_from_strings(SLOT_TEXT)
-        self.slot_selection.connect("notify::selected-item", self.on_slot_changed)
+        self.slot_selection.connect("notify::selected-item", self.__on_slot_changed)
 
         left_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
         right_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
@@ -55,7 +55,7 @@ class SlotSelector(Gtk.Box):
         self.callbacks[event_name]=callback
 
 
-    def on_slot_changed(self, slot_selection, param):
+    def __on_slot_changed(self, slot_selection, param):
         selected_item = slot_selection.get_selected_item()
         if selected_item:
             value = self.get_value()

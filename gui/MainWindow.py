@@ -58,19 +58,19 @@ class MainWindow(Gtk.Window):
         hbox.set_margin_start(20)
         hbox.set_margin_end(20)
 
-        self.profiles = self.load_profiles()
+        self.profiles = self.__load_profiles()
 
         self.lateral_panel=LateralPanel(self.profiles.keys())
         self.lateral_panel.set_hexpand(False)
-        self.lateral_panel.connect("profile-added", self.on_profile_added)
-        self.lateral_panel.connect("profile-removed", self.on_profile_removed)
-        self.lateral_panel.connect("profile-selected", self.on_profile_selected)
+        self.lateral_panel.connect("profile-added", self.__on_profile_added)
+        self.lateral_panel.connect("profile-removed", self.__on_profile_removed)
+        self.lateral_panel.connect("profile-selected", self.__on_profile_selected)
         self.lateral_panel.update_info(DEFAULT_INFO)
 
         self.settings = DEFAULT_SETTINGS
         self.tuning_panel=TuningPanel(self.settings)
         self.tuning_panel.set_hexpand(True)
-        self.tuning_panel.connect("setting-updated", self.on_profile_updated)
+        self.tuning_panel.connect("setting-updated", self.__on_profile_updated)
 
         hbox.append(self.lateral_panel)
         hbox.append(self.tuning_panel)
@@ -78,44 +78,41 @@ class MainWindow(Gtk.Window):
         self.set_child(hbox)
 
 
-    def load_profiles(self):
+    def __load_profiles(self):
         with open(self.profile_file, 'r') as json_file:
             return json.load(json_file)
 
 
-    def save_profiles(self):
+    def __save_profiles(self):
         with open(self.profile_file, 'w') as json_file:
             json.dump(self.profiles, json_file, indent=4)
 
 
-    def update_profile(self):
-        profile_name = self.lateral_panel.get_selected_profile()
-        if profile_name:
-            self.profiles[profile_name] = self.settings
-            self.save_profiles()
-
-
-    def on_profile_added(self, profile_name):
+    def __on_profile_added(self, profile_name):
         self.settings = self.tuning_panel.get_settings()
         self.profiles[profile_name] = self.settings
-        self.save_profiles()
+        self.__save_profiles()
 
 
-    def on_profile_removed(self, profile_name):
+    def __on_profile_removed(self, profile_name):
         if profile_name in self.profiles:
             del self.profiles[profile_name]
-            self.save_profiles()
+            self.__save_profiles()
 
 
-    def on_profile_selected(self, profile_name):
+    def __on_profile_selected(self, profile_name):
         if profile_name in self.profiles:
-            self.settings = self.profiles[profile_name]
-            self.tuning_panel.update_settings(self.profiles[profile_name])
+            self.settings.update(self.profiles[profile_name])
+            self.tuning_panel.update_settings(self.settings)
 
 
-    def on_profile_updated(self, setting_update):
+    def __on_profile_updated(self, setting_update):
         self.settings.update(setting_update)
-        self.update_profile()
+
+        profile_name = self.lateral_panel.get_selected_profile()
+        if profile_name:
+            self.profiles[profile_name].update(setting_update)
+            self.__save_profiles()
 
 
 class App(Gtk.Application):

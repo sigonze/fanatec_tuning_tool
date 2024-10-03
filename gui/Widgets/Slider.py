@@ -54,7 +54,7 @@ class Slider(Gtk.Grid):
         value=min
         adjustment = Gtk.Adjustment(value=value, lower=min, upper=max, step_increment=step)
         self.slider = Gtk.Scale(orientation=Gtk.Orientation.HORIZONTAL, adjustment=adjustment)
-        self.slider.connect("value-changed", self.on_slider_changed)
+        self.slider.connect("value-changed", self.__on_slider_changed)
 
         for l, v in marks.items():
             self.slider.add_mark(v, Gtk.PositionType.TOP, l)
@@ -92,7 +92,7 @@ class Slider(Gtk.Grid):
         self.value_label.set_text(str(snapped_value))
 
 
-    def on_slider_changed(self, slider):
+    def __on_slider_changed(self, slider):
         value=int(slider.get_value())
         snapped_value=(value//self.step)*self.step 
         self.slider.set_value(snapped_value)
