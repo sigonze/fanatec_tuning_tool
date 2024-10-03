@@ -114,8 +114,15 @@ class MainWindow(Gtk.Window):
             self.profiles[profile_name].update(setting_update)
             self.__save_profiles()
 
+
     def on_device_connected(self, device_info):
         self.lateral_panel.update_info(device_info)
 
+
     def on_device_disconnected(self, device_info):
         self.lateral_panel.update_info(device_info)
+
+
+    def on_device_settings(self, device_settings):
+        self.settings.update(device_settings)
+        self.tuning_panel.update_settings(device_settings)

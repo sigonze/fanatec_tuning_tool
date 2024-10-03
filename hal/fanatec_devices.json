@@ -12,5 +12,12 @@
         "0011": "CSR Elite"
     },
     "WHEEL_ID": {
+        "08": "CSL Steering Wheel P1 V2",
+        "04": "CSL ELite Steering Wheel WRC",
+        "0B": "CSL Elite Steering Wheel McLaren GT3 V2",
+        "28": "CSL Elite Steering Wheel McLaren GT3 V2",
+        "21": "ClubSport Steering Wheel F1",
+        "0A": "ClubSport Steering Wheel Formula V2",
+        "0C": "Podium Steering Wheel Porsche 911 GT3R"
     }
 }

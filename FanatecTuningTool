@@ -26,6 +26,7 @@ class App(Gtk.Application):
         self.monitor = FanatecDeviceMonitor()
         self.monitor.connect("device-connected", self.window.on_device_connected)
         self.monitor.connect("device-disconnected", self.window.on_device_disconnected)
+        self.monitor.connect("device-settings", self.window.on_device_settings)
         self.monitor.start()
 
 
