@@ -43,5 +43,5 @@ class LateralPanel(Gtk.Box):
 
 
     def update_info(self, info):
-        info_text = "\n".join(f"{key}: {value}" for key, value in info.items()) 
+        info_text = "\n".join(f"{key}: {value}" for key, value in info.items())
         self.info_label.set_label(info_text)

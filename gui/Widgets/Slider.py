@@ -49,7 +49,7 @@ class Slider(Gtk.Grid):
         else:
             name_label=Gtk.Label(label=name)
         hbox.append(name_label)
-        
+
         # Slider
         value=min
         adjustment = Gtk.Adjustment(value=value, lower=min, upper=max, step_increment=step)
@@ -67,10 +67,10 @@ class Slider(Gtk.Grid):
         hbox.set_size_request(200, -1)
         self.slider.set_hexpand(True)
         self.value_label.set_size_request(80, -1)
-        
-        self.attach(hbox, 0, 1, 1, 1) 
+
+        self.attach(hbox, 0, 1, 1, 1)
         self.attach(self.slider, 1, 1, 1, 1)
-        self.attach(self.value_label, 2, 1, 1, 1) 
+        self.attach(self.value_label, 2, 1, 1, 1)
 
 
     def connect(self, event_name, callback: Callable[[str], None]):
@@ -87,14 +87,14 @@ class Slider(Gtk.Grid):
             value = self.min
         if value > self.max:
             value = self.max
-        snapped_value=(value//self.step)*self.step 
+        snapped_value=(value//self.step)*self.step
         self.slider.set_value(snapped_value)
         self.value_label.set_text(str(snapped_value))
 
 
     def __on_slider_changed(self, slider):
         value=int(slider.get_value())
-        snapped_value=(value//self.step)*self.step 
+        snapped_value=(value//self.step)*self.step
         self.slider.set_value(snapped_value)
         self.value_label.set_text(str(snapped_value))
         if self.callbacks["setting-updated"]:

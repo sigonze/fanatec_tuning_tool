@@ -39,7 +39,7 @@ class TuningPanel(Gtk.Box):
                 default = settings.get("default")
                 marks = settings.get("marks")
                 slider=Slider(
-                    name=name, 
+                    name=name,
                     description=description,
                     min=min,
                     max=max,
@@ -64,14 +64,14 @@ class TuningPanel(Gtk.Box):
                 self.add_slider(key)
                 if self.sliders.get(key):
                     self.sliders[key].set_value(value)
-    
+
     def get_settings(self):
         settings = {}
         settings["SLOT"] = self.slot_selector.get_value()
         for setting, slider in self.sliders.items():
             settings[setting] = slider.get_value()
         return settings
-    
+
     def connect(self, event_name, callback: Callable[[str], None]):
         self.slot_selector.connect(event_name, callback)
         for slider in self.sliders.values():

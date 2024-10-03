@@ -22,7 +22,7 @@ class ProfileList(Gtk.Box):
         # Create an Entry for adding new profile
         self.new_profile_entry = Gtk.Entry()
         self.new_profile_entry.set_placeholder_text("Add new profile...")
-        self.new_profile_entry.connect("activate", self.__on_profile_added) 
+        self.new_profile_entry.connect("activate", self.__on_profile_added)
         self.append(self.new_profile_entry)
 
         # Add profiles
