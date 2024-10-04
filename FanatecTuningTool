@@ -20,7 +20,7 @@ class App(Gtk.Application):
         if not self.window:
             self.window = MainWindow(self.profile_file)
             self.window.set_application(self)
-            self.window.connect("destroy", self.on_window_destroy)
+            self.window.connect("close-request", self.on_close_request)
         self.window.present()
 
         self.monitor = FanatecDeviceMonitor()
@@ -30,7 +30,9 @@ class App(Gtk.Application):
         self.monitor.start()
 
 
-    def on_window_destroy(self, widget):
+    def on_close_request(self, widget):
+        self.monitor.stop()
+        self.monitor = None
         self.window = None
 
 

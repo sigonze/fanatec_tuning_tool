@@ -23,7 +23,7 @@ class FanatecDeviceMonitor:
         self.monitor = pyudev.Monitor.from_netlink(self.context)
         self.monitor.filter_by(subsystem='hid')
         self.observer = pyudev.MonitorObserver(self.monitor, self.__on_device_event)
-
+    
 
     def start(self):
         if not self.is_started:
@@ -36,6 +36,8 @@ class FanatecDeviceMonitor:
         if self.is_started:
             self.observer.stop()
             self.is_started = False
+            for device in self.devices.values():
+                device.stop_monitoring()
 
 
     def connect(self, event_name, callback: Callable[[str], None]):
@@ -62,7 +64,8 @@ class FanatecDeviceMonitor:
             fanatec_device = FanatecDevice(device)
             device_id = fanatec_device.get_id()
             device_info = fanatec_device.info()
-            self.devices[device_id]=device
+            self.devices[device_id]=fanatec_device
+            fanatec_device.start_monitoring()
         
             if self.callbacks["device-connected"]:
                 device_info.update( {"Status": "connected"} )
@@ -82,6 +85,7 @@ class FanatecDeviceMonitor:
             device_id = fanatec_device.get_id()
             device_info = fanatec_device.info()
             del self.devices[device_id]
+            fanatec_device.stop_monitoring()
 
             if self.callbacks["device-disconnected"]:
                 device_info.update( {"Status": "disconnected"} )

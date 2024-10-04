@@ -2,6 +2,8 @@ import pyudev
 import json
 import os
 import re
+import threading
+import time
 
 
 SYSFS_PATH="/sys/module/hid_fanatec/drivers/hid:fanatec"
@@ -28,7 +30,7 @@ class InvalidDevice(Exception):
 
 
 class FanatecDevice:
-    def __init__(self, device):
+    def __init__(self, device, interval=0.1):
         device_id = os.path.basename(device.get('DEVPATH'))
         if device_id.startswith(DEVICE_PREFIX):
             parts = device_id.split(':')
@@ -42,6 +44,10 @@ class FanatecDevice:
         if vendor_id_value != FANATEC_VENDOR_ID:
             raise InvalidDevice(f"Unsupported device {vendor_id_value:04X}")
 
+        self.interval = interval
+        self._running = False
+        self._thread = None
+
         self.device_id = device_id
         self.model_id  = model_id
         self.wheel_id  = self.__get_wheel_id()
@@ -50,6 +56,27 @@ class FanatecDevice:
         self.sysfs_path = os.path.join(*sysfs_path)
 
         self.settings=self.read_settings()
+
+
+    def start_monitoring(self):
+        if not self._running:
+            self._running = True
+            self._thread = threading.Thread(target=self._check_setting_updated)
+            self._thread.start()
+
+
+    def stop_monitoring(self):
+        if self._running:
+            self._running = False
+            self._thread.join()
+
+
+    def _check_setting_updated(self):
+        while self._running:
+            settings = self.read_settings()
+            if settings != self.settings:
+                print(settings)
+                time.sleep(self.interval)
 
 
     def get_id(self):

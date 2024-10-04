@@ -29,10 +29,7 @@ DEFAULT_SETTINGS = {
     "SHO": 100
 }
 
-# DEFAULT_INFO = {
-#     "Base": "CSL DD",
-#     "Wheel": "McLaren GT3 V2"
-# }
+
 DEFAULT_INFO = {
     "MODE": "*** DEMO ***"
 }
