@@ -52,10 +52,6 @@ class TuningPanel(Gtk.Box):
 
 
     def update_settings(self,settings: str):
-        for key in self.sliders:
-            if not key in settings.keys():
-                self.remove(self.sliders[key])
-                self.sliders[key]=None
         for key in settings:
             value = settings[key]
             if key == "SLOT":

@@ -81,10 +81,10 @@ class FanatecDevice:
             time.sleep(self.interval)
             settings = self.read_settings()
             if settings != self.settings:
-                print(settings)
-                self.settings = settings
+                differences = {key: settings[key] for key in settings if settings[key] != self.settings.get(key)}
+                self.settings=settings
                 if self.callbacks["device-settings"]:
-                    self.callbacks["device-settings"](settings)
+                    self.callbacks["device-settings"](differences)
 
 
     def get_id(self):
@@ -131,16 +131,14 @@ class FanatecDevice:
 
 
     def set_settings(self,new_settings):
-        print(new_settings)
         for setting, value in new_settings.items():
             try:
                 file_path = os.path.join(self.sysfs_path, setting)
-                print(f"{setting}={value}")
-                if value >= 0:    # to handle SLOT case (-1 => no change)
+                if value > 0:    # to handle SLOT case (0 => no change)
                     with open(file_path, 'w') as file:
                         file.write(f"{value}")
                     self.settings.update({setting: value})
-            except (FileNotFoundError):
+            except (FileNotFoundError,OSError):
                 pass
 
 

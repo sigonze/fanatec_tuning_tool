@@ -17,7 +17,7 @@ script_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 DEFAULT_SETTINGS = {
-    "SLOT": -1,
+    "SLOT": 0,
     "SEN": 2530,
     "FF": 100,
     "NDP": 50,
@@ -121,7 +121,7 @@ class MainWindow(Gtk.Window):
 
     def __on_profile_updated(self, setting_update):
         self.settings.update(setting_update)
-        self._notify_settings_updated(self.settings)
+        self._notify_settings_updated(setting_update)
 
         profile_name = self.lateral_panel.get_selected_profile()
         if profile_name:

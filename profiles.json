@@ -1,6 +1,6 @@
 {
     "Assetto Corsa": {
-        "SLOT": -1,
+        "SLOT": 0,
         "SEN": 1080,
         "FF": 100,
         "NDP": 17,
@@ -15,7 +15,7 @@
         "SHO": 100
     },
     "Assetto Corsa Competizione": {
-        "SLOT": -1,
+        "SLOT": 0,
         "SEN": 1080,
         "FF": 100,
         "NDP": 20,
@@ -30,7 +30,7 @@
         "SHO": 100
     },
     "Automobilista 2": {
-        "SLOT": -1,
+        "SLOT": 0,
         "SEN": 2530,
         "FF": 100,
         "NDP": 25,
@@ -45,7 +45,7 @@
         "SHO": 100
     },
     "RaceRoom": {
-        "SLOT": -1,
+        "SLOT": 0,
         "SEN": 2530,
         "FF": 100,
         "NDP": 20,
@@ -60,7 +60,7 @@
         "SHO": 100
     },
     "F1 23": {
-        "SLOT": -1,
+        "SLOT": 0,
         "SEN": 360,
         "FF": 100,
         "NDP": 25,

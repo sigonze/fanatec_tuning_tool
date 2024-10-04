@@ -39,15 +39,14 @@ class SlotSelector(Gtk.Box):
 
 
     def get_value(self) -> int:
-        value = self.slot_selection.get_selected()
-        return value-1
+        return self.slot_selection.get_selected()
 
 
     def set_value(self,slot_value):
         if slot_value < 0 or slot_value > len(SLOT_TEXT)+1:
             self.slot_selection.set_selected(0)
         else:
-            self.slot_selection.set_selected(slot_value+1)
+            self.slot_selection.set_selected(slot_value)
 
 
     def connect(self, event_name, callback: Callable[[str], None]):
