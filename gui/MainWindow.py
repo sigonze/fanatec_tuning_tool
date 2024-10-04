@@ -10,6 +10,9 @@ from .TuningPanel import TuningPanel
 from .LateralPanel import LateralPanel
 
 
+from typing import Callable
+
+
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
 
@@ -31,7 +34,7 @@ DEFAULT_SETTINGS = {
 
 
 DEFAULT_INFO = {
-    "MODE": "*** DEMO ***"
+    "Status": "disconnected"
 }
 
 
@@ -55,6 +58,10 @@ class MainWindow(Gtk.Window):
         hbox.set_margin_start(20)
         hbox.set_margin_end(20)
 
+        self.callbacks = {
+            "settings-updated": None
+        }
+
         self.profiles = self.__load_profiles()
 
         self.lateral_panel=LateralPanel(self.profiles.keys())
@@ -67,13 +74,21 @@ class MainWindow(Gtk.Window):
         self.settings = DEFAULT_SETTINGS
         self.tuning_panel=TuningPanel(self.settings)
         self.tuning_panel.set_hexpand(True)
-        self.tuning_panel.connect("setting-updated", self.__on_profile_updated)
+        self.tuning_panel.connect("settings-updated", self.__on_profile_updated)
 
         hbox.append(self.lateral_panel)
         hbox.append(self.tuning_panel)
 
         self.set_child(hbox)
 
+    def _notify_settings_updated(self,settings):
+        if self.callbacks["settings-updated"]:
+            self.callbacks["settings-updated"](settings)
+
+
+    def connect_settings(self, event_name, callback: Callable[[str], None]):
+        assert event_name in self.callbacks.keys()
+        self.callbacks[event_name]=callback
 
     def __load_profiles(self):
         with open(self.profile_file, 'r') as json_file:
@@ -101,10 +116,12 @@ class MainWindow(Gtk.Window):
         if profile_name in self.profiles:
             self.settings.update(self.profiles[profile_name])
             self.tuning_panel.update_settings(self.settings)
+            self._notify_settings_updated(self.settings)
 
 
     def __on_profile_updated(self, setting_update):
         self.settings.update(setting_update)
+        self._notify_settings_updated(self.settings)
 
         profile_name = self.lateral_panel.get_selected_profile()
         if profile_name:

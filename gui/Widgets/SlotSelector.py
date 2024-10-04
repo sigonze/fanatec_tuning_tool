@@ -21,7 +21,7 @@ class SlotSelector(Gtk.Box):
         super().__init__(orientation=Gtk.Orientation.HORIZONTAL)
 
         self.callbacks = {
-            "setting-updated": None
+            "settings-updated": None
         }
 
         self.slot_selection = Gtk.DropDown.new_from_strings(SLOT_TEXT)
@@ -59,5 +59,5 @@ class SlotSelector(Gtk.Box):
         selected_item = slot_selection.get_selected_item()
         if selected_item:
             value = self.get_value()
-            if self.callbacks["setting-updated"]:
-                self.callbacks["setting-updated"]({ "SLOT": value })
+            if self.callbacks["settings-updated"]:
+                self.callbacks["settings-updated"]({ "SLOT": value })

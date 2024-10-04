@@ -29,6 +29,8 @@ class App(Gtk.Application):
         self.monitor.connect("device-settings", self.window.on_device_settings)
         self.monitor.start()
 
+        self.window.connect_settings("settings-updated",self.monitor.on_settings_updated)
+
 
     def on_close_request(self, widget):
         self.monitor.stop()

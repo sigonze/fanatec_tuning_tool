@@ -5,6 +5,7 @@ import re
 import threading
 import time
 
+from typing import Callable
 
 SYSFS_PATH="/sys/module/hid_fanatec/drivers/hid:fanatec"
 
@@ -30,7 +31,7 @@ class InvalidDevice(Exception):
 
 
 class FanatecDevice:
-    def __init__(self, device, interval=0.1):
+    def __init__(self, device, interval=0.5):
         device_id = os.path.basename(device.get('DEVPATH'))
         if device_id.startswith(DEVICE_PREFIX):
             parts = device_id.split(':')
@@ -48,6 +49,10 @@ class FanatecDevice:
         self._running = False
         self._thread = None
 
+        self.callbacks = {
+            "device-settings": None
+        }
+
         self.device_id = device_id
         self.model_id  = model_id
         self.wheel_id  = self.__get_wheel_id()
@@ -55,7 +60,7 @@ class FanatecDevice:
         sysfs_path = [ SYSFS_PATH, device_id, "ftec_tuning", device_id ]
         self.sysfs_path = os.path.join(*sysfs_path)
 
-        self.settings=self.read_settings()
+        self.settings={}
 
 
     def start_monitoring(self):
@@ -73,10 +78,13 @@ class FanatecDevice:
 
     def _check_setting_updated(self):
         while self._running:
+            time.sleep(self.interval)
             settings = self.read_settings()
             if settings != self.settings:
                 print(settings)
-                time.sleep(self.interval)
+                self.settings = settings
+                if self.callbacks["device-settings"]:
+                    self.callbacks["device-settings"](settings)
 
 
     def get_id(self):
@@ -96,9 +104,14 @@ class FanatecDevice:
         return info
 
 
+    def connect(self, event_name, callback: Callable[[str], None]):
+        assert event_name in self.callbacks.keys()
+        self.callbacks[event_name]=callback
+
+
     def read_settings(self):
         settings = {}
-        pattern = re.compile(r'^[A-Z]{2,3}$')
+        pattern = re.compile(r'^[A-Z]{2,3}$|^SLOT$')
 
         for filename in os.listdir(self.sysfs_path):
             if pattern.match(filename):
@@ -115,6 +128,20 @@ class FanatecDevice:
 
     def get_settings(self):
         return self.settings
+
+
+    def set_settings(self,new_settings):
+        print(new_settings)
+        for setting, value in new_settings.items():
+            try:
+                file_path = os.path.join(self.sysfs_path, setting)
+                print(f"{setting}={value}")
+                if value >= 0:    # to handle SLOT case (-1 => no change)
+                    with open(file_path, 'w') as file:
+                        file.write(f"{value}")
+                    self.settings.update({setting: value})
+            except (FileNotFoundError):
+                pass
 
 
     def __get_wheel_id(self):

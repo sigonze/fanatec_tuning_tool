@@ -45,6 +45,10 @@ class FanatecDeviceMonitor:
         self.callbacks[event_name]=callback
 
 
+    def on_settings_updated(self, settings):
+        for device in self.devices.values():
+            device.set_settings(settings)
+
     def __list_devices(self):
         self.devices = {}
         hid_devices = self.context.list_devices(subsystem='hid')
@@ -65,15 +69,14 @@ class FanatecDeviceMonitor:
             device_id = fanatec_device.get_id()
             device_info = fanatec_device.info()
             self.devices[device_id]=fanatec_device
-            fanatec_device.start_monitoring()
         
             if self.callbacks["device-connected"]:
                 device_info.update( {"Status": "connected"} )
                 self.callbacks["device-connected"](device_info)
 
             if self.callbacks["device-settings"]:
-                settings = fanatec_device.get_settings()
-                self.callbacks["device-settings"](settings)
+                fanatec_device.connect("device-settings", self.callbacks["device-settings"])
+            fanatec_device.start_monitoring()
 
         except InvalidDevice as e:
             pass

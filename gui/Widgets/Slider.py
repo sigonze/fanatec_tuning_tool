@@ -10,7 +10,7 @@ class Slider(Gtk.Grid):
         super().__init__()
 
         self.callbacks = {
-            "setting-updated": None
+            "settings-updated": None
         }
 
         self.name = name
@@ -97,5 +97,5 @@ class Slider(Gtk.Grid):
         snapped_value=(value//self.step)*self.step
         self.slider.set_value(snapped_value)
         self.value_label.set_text(str(snapped_value))
-        if self.callbacks["setting-updated"]:
-            self.callbacks["setting-updated"]({ self.name: snapped_value })
+        if self.callbacks["settings-updated"]:
+            self.callbacks["settings-updated"]({ self.name: snapped_value })
